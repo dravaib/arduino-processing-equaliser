@@ -14,6 +14,7 @@ int vl = 0;
 int val = 0;
 int peak = 0;
 int dotMode = false;
+int peakMode = true;
 
 int blue = 255;
 int green = 0;
@@ -50,18 +51,41 @@ void loop() {
             Serial.println(peak);
             
             int valreal = i-1 + MAX_BAR_WIDTH * (val - 1);
-
-         
               for (int k = 1; k <= MAX_BAR_HEIGHT; k++) {
                 valreal = i-1 + MAX_BAR_WIDTH * (k - 1);
-                
-                if(k == peak) leds[valreal] = CRGB::Red;
-                else if(k <= val && k < peak) {
-                  leds[valreal].blue = blue;
-                  leds[valreal].red = red;
-                  leds[valreal].green = green;
+
+                if(peakMode) {
+                  if(k == peak) {
+                    leds[valreal] = CRGB::Red;
+                  }
+                  else if(!dotMode && k <= val && k < peak) {
+                    leds[valreal].blue = blue;
+                    leds[valreal].red = red;
+                    leds[valreal].green = green;
+                  }
+                  else if(dotMode && k==val && k < peak) {
+                    leds[valreal].blue = blue;
+                    leds[valreal].red = red;
+                    leds[valreal].green = green;
+                  }
+                  else {
+                    leds[valreal] = CRGB::Black; 
+                  }
+                } else {
+                  if(!dotMode && k <= val) {
+                    leds[valreal].blue = blue;
+                    leds[valreal].red = red;
+                    leds[valreal].green = green;
+                  }
+                  else if(dotMode && k==val) {
+                    leds[valreal].blue = blue;
+                    leds[valreal].red = red;
+                    leds[valreal].green = green;
+                  }
+                  else {
+                    leds[valreal] = CRGB::Black; 
+                  }
                 }
-                else leds[valreal] = CRGB::Black; 
               }
           }
           
@@ -70,13 +94,12 @@ void loop() {
         }
 
         case 'd': {
-          if(dotMode) dotMode = false;
-          else dotMode = true;
+          dotMode = !dotMode;
+          break;
+        }
 
-          
-          Serial.println(dotMode);
-
-          delay(3000);
+        case 'p': {
+          peakMode = !peakMode;
           break;
         }
 
